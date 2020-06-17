@@ -1,0 +1,141 @@
+# djangoubuntumysql
+Installation of django on Ubuntu20.04 with mysql fixes
+
+First of all install Ubuntu and access via SSH
+
+Add section about what is good with Ubuntu20.04?
+Abstract: https://computingforgeeks.com/ubuntu-20-04-vs-ubuntu-18-04-comparison-table/
+
+update packages:
+
+$   sudo apt update -y && sudo apt upgrade -y
+
+check python version:
+
+$   python3 --version
+
+install pip:
+
+$   sudo apt install python3-pip
+
+install required libraries:
+
+$   sudo apt-get install python3-venv
+$   sudo apt-get install libmysqlclient-dev
+
+install mysql:
+
+$   sudo apt-get install mysql-server
+
+Configure mysql:
+ 
+$  sudo mysql_secure_installation
+(Yes, 0, Yes, Yes... Yes)
+
+
+$   sudo mysql -u root -p
+(Enter root password from previous step)
+
+Create database:
+
+mysql>  CREATE DATABASE djangodb;
+
+
+Fix mysql privileges for root account, 
+some info here: https://sigdelsanjog.com.np/how-to-change-authentication-method-in-mysql/
+List users:
+
+mysql>  SELECT user, authentication_string, plugin, host FROM mysql.user;
+
+We can see root is not using 'caching_sha2_password' but 'auth_socket'. Let's change that to avoid issues with django3
+
+mysql>   ALTER USER 'root'@'localhost' IDENTIFIED WITH caching_sha2_password BY 'Isarweg47';
+mysql>   FLUSH PRIVILEGES;
+mysql>   exit
+
+Make directory for djangoproject:
+(some text can be from here: https://www.techiediaries.com/django-tutorial/)
+
+$   cd $HOME
+$   mkdir djangoapp
+$   cd djangoapp
+
+Activate virtual environment:
+
+$ source .env/bin/activate
+
+Install necessary packages
+
+$ pip install django
+$ pip install djangorestframework
+
+$ pip install wheel         -requirement
+$ pip install mysqlclient
+
+Start project:
+
+$ django-admin startproject djangoapp
+
+This will create directory structure.
+
+Next, open the settings.py file and update the database setting to point to our crmdb database:
+
+$   cd djangoapp
+$   nano settings.py
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.mysql', 
+        'NAME': 'djangodb',                     #useyourown
+        'USER': 'root',
+        'PASSWORD': 'YOUR_DB_PASSWORD',         #useyourown (root's sql password)
+        'HOST': 'localhost',   
+        'PORT': '3306',
+    }    
+}
+Next, add rest_framework to the INSTALLED_APPS array:
+
+INSTALLED_APPS = [
+    # [...]
+    'rest_framework',
+]
+Finally, migrate the database using the following commands:
+
+$ cd simplecrm
+$ python manage.py migrate
+
+Create superuser:
+
+$   python manage.py createsuperuser
+
+Start the application, for example:
+
+$   python manage.py startapp djangoapplication
+
+and edit settings.py again and add 'djangoapplication' to the list of apps.
+
+INSTALLED_APPS = [
+    'django.contrib.admin',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.messages',
+    'django.contrib.staticfiles',
+    'rest_framework',
+    'djangoapplication',
+]
+
+Under allowed hosts add 'localhost' and your public IP and your public domain name (if any)
+
+ALLOWED_HOSTS = ['localhost']
+
+You can start the server with:
+
+$   python manage.py runserver 0.0.0.0:8000
+
+8000 is the port, 0.0.0.0 means connection will be accepted from any interface/IP
+
+
+
+
+
