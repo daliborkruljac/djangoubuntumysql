@@ -1,1 +1,25 @@
 This file describes how to add djangoserver to autostartup script.
+Unfinished
+
+
+d $HOME
+
+write script:
+
+sudo nano djangoapp.service
+
+#!/bin/bash
+cd /home/ubuntu/djangoapp/
+python3 -m venv .env
+source .env/bin/activate
+cd djangoapp
+python manage.py runserver 0.0.0.0:8000
+
+
+make it executable
+sudo chmod +x djangoapp.service
+
+copy it:
+sudo cp djangoapp.service /lib/systemd/system/
+
+need to make it service unit and make it autosart (sudo systemctl start djangoapp.service)
