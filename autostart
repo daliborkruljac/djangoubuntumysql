@@ -1,25 +1,63 @@
 This file describes how to add djangoserver to autostartup script.
-Unfinished
 
+We need 2 files, a script file and a service file.
+Script we will place in /usr/bin/djangoapp.sh and service file in /lib/systemd/system/djangoapp.service
 
-d $HOME
+First let's start with writing both files to home directory:
 
-write script:
+$   cd $HOME
 
-sudo nano djangoapp.service
+Write a script (without comments):
 
-#!/bin/bash
+$   sudo nano djangoapp.sh
+
+#!/bin/bash                                   #must start the script with a shell info as stated here
 cd /home/ubuntu/djangoapp/
 python3 -m venv .env
 source .env/bin/activate
 cd djangoapp
-python manage.py runserver 0.0.0.0:8000
+python manage.py runserver 0.0.0.0:8000       #edit for your project, port, etc.
 
 
 make it executable
-sudo chmod +x djangoapp.service
+$   sudo chmod u+x djangoapp.sh
 
 copy it:
-sudo cp djangoapp.service /lib/systemd/system/
+$   sudo cp djangoapp.sh /usr/bin/djangoapp.sh
 
-need to make it service unit and make it autosart (sudo systemctl start djangoapp.service)
+
+now we need to make service unit and make it autosart (sudo systemctl start djangoapp.service)
+
+
+$   sudo nano djangoapp.service
+
+[Unit]
+Description=DjangoApp Service
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/djangoapp.sh
+[Install]
+WantedBy=multi-user.target
+
+save the file and then copy it:
+
+$   sudo cp djangoapp.service /lib/systemd/system/djangoapp.service
+
+Now enable it:
+
+$   sudo systemctl enable djangoapp.service
+
+Now the service will autostart every time after server is rebooted.
+You can always start and stop it manually
+sudo systemctl stop djangoapp.service
+sudo systemctl start djangoapp.service
+
+To remove from autostart:
+
+$   sudo systemctl disable djangoapp.service
+
+You can now delete files from your home directory:
+
+$   rm djangoapp.*
+
+
