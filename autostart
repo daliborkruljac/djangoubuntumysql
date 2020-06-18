@@ -61,3 +61,9 @@ You can now delete files from your home directory:
 $   rm djangoapp.*
 
 
+
+some text that can be used:
+https://unix.stackexchange.com/questions/47695/how-to-write-startup-script-for-systemd
+https://linuxconfig.org/how-to-run-script-on-startup-on-ubuntu-20-04-focal-fossa-server-desktop
+https://askubuntu.com/questions/1151080/how-do-i-run-a-script-as-sudo-at-boot-time-on-ubuntu-18-04-server
+
